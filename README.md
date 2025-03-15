@@ -16,6 +16,12 @@ objetivo de evaluar la función de captura de un Pokemon.
 
 ### Instalación
 
+Utilizando pip (o pip3 en mac/linux) instalar la dependencia de **pipenv**
+
+```sh
+pip install pipenv
+```
+
 Parado en la carpeta del tp0 ejecutar
 
 ```sh
