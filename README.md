@@ -26,7 +26,13 @@ para instalar las dependencias necesarias en el ambiente virtual
 
 ## Ejecución
 
-```
+```sh
 pipenv run python main.py [config_file]
+```
+
+## Jupyter Notebook
+
+```sh
+pipenv run jupyter notebook
 ```
 
