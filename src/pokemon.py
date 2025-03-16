@@ -43,6 +43,10 @@ class StatusEffect(Enum):
     FREEZE = ("freeze", 2)
     NONE = ("none", 1)
 
+    @classmethod
+    def from_string(cls, name: str):
+        mapping = {effect.value[0]: effect for effect in cls}
+        return mapping.get(name.lower(), cls.NONE)
 
 class Pokemon:
     def __init__(
