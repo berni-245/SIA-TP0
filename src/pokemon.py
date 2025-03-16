@@ -2,6 +2,7 @@ import json
 import math
 from enum import Enum
 from typing import NamedTuple, Tuple
+from src.utils import clamp
 
 
 class Type(str, Enum):
@@ -53,7 +54,7 @@ class Pokemon:
         self,
         name: str,
         type: Tuple[Type, Type],
-        current_hp: int,
+        current_hp_percentage: float,
         status_effect: StatusEffect,
         level: int,
         stats: Stats,
@@ -67,9 +68,10 @@ class Pokemon:
         self._catch_rate = catch_rate
         self._weight = weight
 
-        self.current_hp = current_hp
         self.status_effect = status_effect
         self.level = level
+
+        self.set_current_hp(current_hp_percentage)
 
     @property  # Property annotation for read-only attributes
     def name(self):
@@ -82,7 +84,7 @@ class Pokemon:
     @property
     def stats(self):
         return self._stats
-
+    
     @property
     def catch_rate(self):
         return self._catch_rate
@@ -99,31 +101,62 @@ class Pokemon:
         # Real max hp formula includes EVs and IVs, this is a simplification
         return math.floor(0.01 * (2 * base_hp) + level + 10)
 
+    def set_current_hp(self, hp_percentage: float):
+        self.current_hp = math.floor(clamp(0, hp_percentage, 1)  * self.max_hp)
+
+    def damage(self, percentage: float):
+        print(clamp(0, percentage, 1))
+        print(max(0, self.max_hp * (clamp(0, percentage, 1))))
+        self.current_hp -= max(0, self.max_hp * (clamp(0, percentage, 1)))
+
+    def level_up(self):
+        self.level += 1
+        self.set_current_hp(1)
+
+    def __str__(self):
+        return (
+            f"{self.name} (Level {self.level})\n"
+            f"Type: {self.type[0].name}" + (f" / {self.type[1].name}" if self.type[1] else "") + "\n"
+            f"HP: {self.current_hp}/{self.max_hp}\n"
+            f"Status: {self.status_effect.name}\n"
+            f"Stats: {self.stats}\n"
+            f"Catch Rate: {self.catch_rate}, Weight: {self.weight}kg"
+        )
+
 
 class PokemonFactory:
     def __init__(self, src_file="pokemon.json"):
         self._src_file = src_file
+        with open(self._src_file, "r") as c:
+            self.pokemon_db = json.load(c)
 
     def create(
         self, name: str, level: int, status: StatusEffect, hp_percentage: float
     ) -> Pokemon:
         if hp_percentage < 0 or hp_percentage > 1:
             raise ValueError("hp has to be value between 0 and 1")
-        with open(self._src_file, "r") as c:
-            pokemon_db = json.load(c)
-            if name.lower() not in pokemon_db:
+            if name.lower() not in self.pokemon_db:
                 raise ValueError("Not a valid pokemon")
-            poke = pokemon_db[name]
+            poke = self.pokemon_db[name]
 
             t1, t2 = poke["type"]
             type = (Type(t1.lower()), Type(t2.lower()))
             stats = Stats(*poke["stats"])
 
             new_pokemon = Pokemon(
-                name, type, 0, status, level, stats, poke["catch_rate"], poke["weight"]
+                name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
             )
 
-            max_hp = new_pokemon.max_hp
-            hp = math.floor(hp_percentage * max_hp)
-            new_pokemon.current_hp = hp if hp > 0 else 1
             return new_pokemon
+
+    def create_all(self, level=1) -> list[Pokemon]:
+        pokemons = []
+        for name in self.pokemon_db:
+            poke = self.pokemon_db[name]
+            t1, t2 = poke["type"]
+            type = (Type(t1.lower()), Type(t2.lower()))
+            stats = Stats(*poke["stats"])
+            pokemons.append(Pokemon(
+                name, type, 1, StatusEffect.NONE, level, stats, poke["catch_rate"], poke["weight"]
+            ))
+        return pokemons
