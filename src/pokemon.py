@@ -135,19 +135,19 @@ class PokemonFactory:
     ) -> Pokemon:
         if hp_percentage < 0 or hp_percentage > 1:
             raise ValueError("hp has to be value between 0 and 1")
-            if name.lower() not in self.pokemon_db:
-                raise ValueError("Not a valid pokemon")
-            poke = self.pokemon_db[name]
+        if name.lower() not in self.pokemon_db:
+            raise ValueError("Not a valid pokemon")
+        poke = self.pokemon_db[name]
 
-            t1, t2 = poke["type"]
-            type = (Type(t1.lower()), Type(t2.lower()))
-            stats = Stats(*poke["stats"])
+        t1, t2 = poke["type"]
+        type = (Type(t1.lower()), Type(t2.lower()))
+        stats = Stats(*poke["stats"])
 
-            new_pokemon = Pokemon(
-                name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
-            )
-
-            return new_pokemon
+        new_pokemon = Pokemon(
+            name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
+        )
+        print(new_pokemon)
+        return new_pokemon
 
     def create_all(self, level=1) -> list[Pokemon]:
         pokemons = []
