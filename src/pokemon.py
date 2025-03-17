@@ -105,8 +105,6 @@ class Pokemon:
         self.current_hp = math.floor(clamp(0, hp_percentage, 1)  * self.max_hp)
 
     def damage(self, percentage: float):
-        print(clamp(0, percentage, 1))
-        print(max(0, self.max_hp * (clamp(0, percentage, 1))))
         self.current_hp -= max(0, self.max_hp * (clamp(0, percentage, 1)))
 
     def level_up(self):
@@ -146,7 +144,6 @@ class PokemonFactory:
         new_pokemon = Pokemon(
             name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
         )
-        print(new_pokemon)
         return new_pokemon
 
     def create_all(self, level=1) -> list[Pokemon]:
