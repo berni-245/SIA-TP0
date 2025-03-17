@@ -103,6 +103,9 @@ class Pokemon:
 
     def set_current_hp(self, hp_percentage: float):
         self.current_hp = math.floor(clamp(0, hp_percentage, 1)  * self.max_hp)
+    
+    def set_status_effect(self, effect: StatusEffect):
+        self.status_effect = effect
 
     def damage(self, percentage: float):
         self.current_hp -= max(0, self.max_hp * (clamp(0, percentage, 1)))
