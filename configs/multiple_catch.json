@@ -1,0 +1,7 @@
+{
+    "pokemon": ["snorlax", "jolteon", "caterpie", "mewtwo", "onix"],
+    "pokeball": "pokeball",
+    "level": 100,
+    "status": "none",
+    "hp": 1
+}

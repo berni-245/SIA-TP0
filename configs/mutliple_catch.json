@@ -1,7 +1,0 @@
-{
-    "pokemon": ["caterpie", "snorlax", "jolteon", "onix", "mewtwo"],
-    "pokeball": "fastball",
-    "level": 100,
-    "status": "none",
-    "hp": 1
-}
