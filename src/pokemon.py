@@ -1,7 +1,7 @@
 import json
 import math
 from enum import Enum
-from typing import NamedTuple, Tuple
+from typing import NamedTuple, Tuple, List
 from src.utils import clamp
 
 
@@ -43,6 +43,10 @@ class StatusEffect(Enum):
     SLEEP = ("sleep", 2)
     FREEZE = ("freeze", 2)
     NONE = ("none", 1)
+
+    def __init__(self, status_name: str, modifier: float):
+        self.status_name = status_name
+        self.modifier = modifier
 
     @classmethod
     def from_string(cls, name: str):
@@ -148,6 +152,25 @@ class PokemonFactory:
             name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
         )
         return new_pokemon
+    
+    def create_many(
+            self, pokemon_list: List[str], level=1, status: StatusEffect = StatusEffect.NONE, hp_percentage = 1
+    ) -> List[Pokemon]:
+        to_return = []
+        for pokemon_name in pokemon_list:
+            if pokemon_name.lower() not in self.pokemon_db:
+                raise ValueError("Not a valid pokemon")
+            poke = self.pokemon_db[pokemon_name]
+            
+            t1, t2 = poke["type"]
+            type = (Type(t1.lower()), Type(t2.lower()))
+            stats = Stats(*poke["stats"])
+
+            to_return.append(Pokemon(
+                pokemon_name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
+            ))
+        return to_return
+        
 
     def create_all(self, level=1) -> list[Pokemon]:
         pokemons = []
