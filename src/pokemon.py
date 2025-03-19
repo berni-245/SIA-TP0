@@ -158,16 +158,8 @@ class PokemonFactory:
     ) -> List[Pokemon]:
         to_return = []
         for pokemon_name in pokemon_list:
-            if pokemon_name.lower() not in self.pokemon_db:
-                raise ValueError("Not a valid pokemon")
-            poke = self.pokemon_db[pokemon_name]
-            
-            t1, t2 = poke["type"]
-            type = (Type(t1.lower()), Type(t2.lower()))
-            stats = Stats(*poke["stats"])
-
-            to_return.append(Pokemon(
-                pokemon_name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
+            to_return.append(self.create(
+                pokemon_name, level, status, hp_percentage
             ))
         return to_return
         
