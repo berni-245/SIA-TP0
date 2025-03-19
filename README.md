@@ -22,7 +22,7 @@ Utilizando pip (o pip3 en mac/linux) instalar la dependencia de **pipenv**
 pip install pipenv
 ```
 
-Parado en la carpeta del tp0 ejecutar
+Parado en la carpeta del proyecto ejecutar
 
 ```sh
 pipenv install
@@ -30,15 +30,9 @@ pipenv install
 
 para instalar las dependencias necesarias en el ambiente virtual
 
-## Ejecución
-
-```sh
-pipenv run python main.py [config_file]
-```
-
-## Jupyter Notebook
+## Ejecutar Jupyter Notebook
 
 ```sh
 pipenv run jupyter notebook
 ```
-
+Finalmente, abrir el archivo `main.ipynb`
