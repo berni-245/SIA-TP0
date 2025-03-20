@@ -53,6 +53,7 @@ class StatusEffect(Enum):
         mapping = {effect.value[0]: effect for effect in cls}
         return mapping.get(name.lower(), cls.NONE)
 
+
 class Pokemon:
     def __init__(
         self,
@@ -65,7 +66,6 @@ class Pokemon:
         catch_rate: int,
         weight: float,
     ):
-
         self._name = name  # Underscored variables denote "private"
         self._type = type
         self._stats = stats
@@ -88,7 +88,7 @@ class Pokemon:
     @property
     def stats(self):
         return self._stats
-    
+
     @property
     def catch_rate(self):
         return self._catch_rate
@@ -106,27 +106,37 @@ class Pokemon:
         return math.floor(0.01 * (2 * base_hp) + level + 10)
 
     def set_current_hp(self, hp_percentage: float):
-        self.current_hp = math.floor(clamp(0, hp_percentage, 1)  * self.max_hp)
-    
+        self.current_hp = math.floor(clamp(0, hp_percentage, 1) * self.max_hp)
+
     def set_status_effect(self, effect: StatusEffect):
         self.status_effect = effect
 
     def damage(self, percentage: float):
         self.current_hp -= max(0, self.max_hp * (clamp(0, percentage, 1)))
 
-    def level_up(self):
-        self.level += 1
-        self.set_current_hp(1)
+    def level_up(self) -> bool:
+        if self.level < 100:
+            self.level += 1
+            self.set_current_hp(1)
+            return True
+        return False
 
     def __str__(self):
         return (
             f"{self.name} (Level {self.level})\n"
-            f"Type: {self.type[0].name}" + (f" / {self.type[1].name}" if self.type[1] else "") + "\n"
+            f"Type: {self.type[0].name}"
+            + (f" / {self.type[1].name}" if self.type[1] else "")
+            + "\n"
             f"HP: {self.current_hp}/{self.max_hp}\n"
             f"Status: {self.status_effect.name}\n"
             f"Stats: {self.stats}\n"
             f"Catch Rate: {self.catch_rate}, Weight: {self.weight}kg"
         )
+
+    def __repr__(self):
+        return (f"Pokemon(name={self.name!r}, type={self.type}, level={self.level}, "
+                f"current_hp={self.current_hp}, status_effect={self.status_effect}, "
+                f"stats={self.stats}, catch_rate={self.catch_rate}, weight={self.weight})")
 
 
 class PokemonFactory:
@@ -149,20 +159,28 @@ class PokemonFactory:
         stats = Stats(*poke["stats"])
 
         new_pokemon = Pokemon(
-            name, type, hp_percentage, status, level, stats, poke["catch_rate"], poke["weight"]
+            name,
+            type,
+            hp_percentage,
+            status,
+            level,
+            stats,
+            poke["catch_rate"],
+            poke["weight"],
         )
         return new_pokemon
-    
+
     def create_many(
-            self, pokemon_list: List[str], level=1, status: StatusEffect = StatusEffect.NONE, hp_percentage = 1
+        self,
+        pokemon_list: List[str],
+        level=1,
+        status: StatusEffect = StatusEffect.NONE,
+        hp_percentage=1,
     ) -> List[Pokemon]:
         to_return = []
         for pokemon_name in pokemon_list:
-            to_return.append(self.create(
-                pokemon_name, level, status, hp_percentage
-            ))
+            to_return.append(self.create(pokemon_name, level, status, hp_percentage))
         return to_return
-        
 
     def create_all(self, level=1) -> list[Pokemon]:
         pokemons = []
@@ -171,7 +189,16 @@ class PokemonFactory:
             t1, t2 = poke["type"]
             type = (Type(t1.lower()), Type(t2.lower()))
             stats = Stats(*poke["stats"])
-            pokemons.append(Pokemon(
-                name, type, 1, StatusEffect.NONE, level, stats, poke["catch_rate"], poke["weight"]
-            ))
+            pokemons.append(
+                Pokemon(
+                    name,
+                    type,
+                    1,
+                    StatusEffect.NONE,
+                    level,
+                    stats,
+                    poke["catch_rate"],
+                    poke["weight"],
+                )
+            )
         return pokemons
